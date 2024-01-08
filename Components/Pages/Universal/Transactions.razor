@@ -1,0 +1,32 @@
+﻿@page "/transactions"
+@using Layout
+@layout AdminLayout
+
+<div class="container">
+    <h1 class="my-4">Transactions</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Transaction ID</th>
+                <th scope="col">Customer Name</th>
+                <th scope="col">Transaction Amount</th>
+                <th scope="col">Transaction Date</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Your data goes here -->
+            <tr>
+                <td><span class="badge rounded-pill bg-secondary p-2">ID</span></td>
+                <td>Product 1</td>
+                <td>Company 1</td>
+                <td><span class="btn rounded-pill btn-outline-warning">Primary</span></td>
+                <td><a class="btn rounded-3 w-100 edit-btn" style=" background-color: var(--primary-color); color: #ffff">View Document</a></td>
+            </tr>
+            <!-- Add more <tr> rows as needed -->
+        </tbody>
+    </table>
+</div>
+@code {
+
+}

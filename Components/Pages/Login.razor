@@ -1,0 +1,71 @@
+﻿@page "/"
+@using Logics
+@using Coursework1Development.Components.Alerts
+@using Components.Layout
+@layout EmptyLayout
+
+<div class="d-flex justify-content-center align-items-center bg-dark mainContainer text-light">
+    <div class="p-5 inputContainer shadow">
+
+        @if (!string.IsNullOrEmpty(_message))
+        {
+            <ErrorAlert Message="@_message" CloseHandler="@HandleCloseAlert"/>
+        }
+
+        <p class="display-5 text-center mb-3">Login</p>
+
+        <form @onsubmit ="handleLoginSubmit">
+            <div class="form-group mb-2">
+                <label for="usernameInput">Username</label>
+                <input class="form-control input-sm" id="usernameInput" type="text" 
+                @bind-value ="_username">
+            </div>
+            <div class="form-group mb-3">
+                <label for="passwordInput">Password</label>
+                <input class="form-control input-sm" id="passwordInput" type="password"
+                @bind-value= "_password">
+            </div>
+
+            <button type="submit" class="btn w-100 text-light" style="background-color: var(--primary-color)">Login</button>
+        </form>
+    </div>
+</div>
+
+@code{
+    @inject NavigationManager NavigationManager;
+
+    string _username;
+    string _password;
+    string _message;
+
+    private void handleLoginSubmit(){
+        SortedDictionary<string, string> loginResponses=  UserAuthentication.Login_user(_username, _password);
+        loginResponses.TryGetValue("credentialsMatches", out string response);
+        loginResponses.TryGetValue("message", out string message);
+        if(response== "no")
+        {
+            _message = message;
+        }
+
+
+
+        if(response == "yes")
+        {
+            loginResponses.TryGetValue("userRole", out string role);
+
+            if(role == "admin")
+            {
+                NavigationManager.NavigateTo("/admin/home");
+            }
+            else if (role == "staff")
+            {
+                NavigationManager.NavigateTo("/staff/home");
+            }
+        }
+    }
+
+
+    void HandleCloseAlert(){
+        _message = null;
+    }
+}

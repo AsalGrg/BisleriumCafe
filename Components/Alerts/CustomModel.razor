@@ -1,0 +1,30 @@
+﻿
+<Modal @ref="ModalRef" Title="">
+    <BodyTemplate>
+        @ChildContent
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="HideAsync">Close</Button>
+        <Button Color="ButtonColor.Primary" @onclick="SaveChangesHandler">Save changes</Button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    [Parameter] public Modal ModalRef { get; set; }
+    [Parameter] public EventCallback SaveChangesHandler { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    private string _name;
+
+    public async Task ShowAsync()
+    {
+        await ModalRef.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        await ModalRef.HideAsync();
+    }
+
+}
+
+

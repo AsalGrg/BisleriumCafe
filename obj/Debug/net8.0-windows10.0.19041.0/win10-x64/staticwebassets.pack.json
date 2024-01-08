@@ -1,0 +1,37 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\Lenovo\\Documents\\MODULES\\Application Development\\Coursework1Development\\Coursework1Development\\obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\scopedcss\\bundle\\Coursework1Development.styles.css",
+      "PackagePath": "staticwebassets\\Coursework1Development.styles.css"
+    },
+    {
+      "Id": "C:\\Users\\Lenovo\\Documents\\MODULES\\Application Development\\Coursework1Development\\Coursework1Development\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\Lenovo\\Documents\\MODULES\\Application Development\\Coursework1Development\\Coursework1Development\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\Lenovo\\Documents\\MODULES\\Application Development\\Coursework1Development\\Coursework1Development\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.Coursework1Development.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.build.Coursework1Development.props",
+      "PackagePath": "build\\Coursework1Development.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.buildMultiTargeting.Coursework1Development.props",
+      "PackagePath": "buildMultiTargeting\\Coursework1Development.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.buildTransitive.Coursework1Development.props",
+      "PackagePath": "buildTransitive\\Coursework1Development.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

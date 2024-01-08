@@ -1,0 +1,332 @@
+﻿@page "/placeOrder"
+@using Coursework1Development.Components.Layout
+@using Coursework1Development.Models
+@using Coursework1Development.Logics
+@using Coursework1Development.Components.Alerts
+@using Coursework1Development.DTOs
+
+@layout StaffLayout
+
+
+
+<Modal @ref="enterCustomerDetailsModal" Title="Add Customer">
+    <BodyTemplate>
+        
+        @if (_customerSelectionErrorMsg != null)
+        {
+            <ErrorAlert CloseHandler="CloseErrorAlert" Message="@_customerSelectionErrorMsg"/>
+        }
+        <div class="d-flex justify-content-between">
+
+            <Button Class="text-light" style="background-color:var(--primary-color)"
+            @onclick="()=>proceedAsMember= !proceedAsMember">Proceed as member</Button>
+
+            <Button Class="text-light" style="background-color:var(--primary-color)"
+            @onclick= "ProceedGuestOrder"
+            >Proceed as guest</Button>
+        </div>
+
+        @if (proceedAsMember)
+        {
+            <div class="row mt-4">
+                <div class="form-group mb-2 col-12">
+                    <label for="usernameInput">Member name or phone number</label>
+                    <input class="form-control input-sm" id="usernameInput" type="text"
+                           @bind-value="_memberNameOrPhoneNum">
+                </div>
+
+                <Button Class="text-light mt-4" style="background-color:var(--primary-color)">
+                    Confirm Order
+                </Button>
+
+            </div>
+        }
+    </BodyTemplate>
+</Modal>
+
+
+<Modal @ref="redeemFreeDrinkOptionModal" Title="Redeem Option">
+    <BodyTemplate>
+
+        <p>You have @noOfFreeDrinks complimentary drinks left! Do you want redeem it?</p>
+        <div class="d-flex justify-content-between">
+
+            <Button Class="text-light" style="background-color:var(--primary-color)"
+                    @onclick="()=>proceedAsMember= !proceedAsMember">
+                Redeem now
+            </Button>
+
+            <Button Class="text-light" style="background-color:var(--primary-color)"
+                    @onclick="ProceedGuestOrder">
+                Redeem later
+            </Button>
+        </div>
+    </BodyTemplate>
+</Modal>
+
+
+@if (orderSuccess)
+{
+    <OrderSuccess/>
+}
+else{
+<div class="container text-light">
+    <h1 class="my-4 text-dark">Place Order</h1>
+
+    @if (_universalErrorMessage != null)
+    {
+        <ErrorAlert CloseHandler="CloseErrorAlert" Message="@_universalErrorMessage" />
+    }
+
+    <div class="d-flex justify-content-evenly align-items-center">
+        <div class="rounded-3 p-5 me-4 shadow" style="background-color: var(--primary-light); width:700px">
+
+                <div class="row">
+                <p class="lead fw-bold text-start">Select Product ☕</p>
+                    
+                @foreach(var eachProductInput in productsFromInput)
+                {
+                    <div class="col-8">
+                        <div class="form-group mb-3">
+                            <label for="passwordInput">Choose Product</label>
+                            <select class="form-select" aria-label="Default select example" @bind= "eachProductInput.Name">
+                                <option selected disabled>Select Product</option>
+                                @foreach (var product in products)
+                                {
+                                    <option>@product.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group mb-3">
+                            <label for="passwordInput">Select Quantity</label>
+                            <input class="form-control input-sm" id="passwordInput" type="number"
+                            @bind-value= "eachProductInput.Quantity">
+                        </div>
+                    </div>
+                }
+                <div class="d-flex justify-content-between col-12">
+                    <button type="submit" class="btn text-light" style="background-color: var(--primary-color);"
+                    @onclick="()=>productsFromInput.Add(new())">Add input</button>
+
+                    @if (productsFromInput.Count > 1)
+                    {
+                        <button type="submit" class="btn text-light btn-danger"
+                                @onclick="()=> productsFromInput.RemoveAt(productsFromInput.Count - 1)">
+                                Delete input</button>
+                    }
+
+                    <button type="submit" class="btn text-light btn-danger"
+                            @onclick="Check">
+                        Check input
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        @* Add AddIns section *@
+
+            <div class="rounded-3 p-5 shadow" style="background-color: var(--catcher); width:700px">
+
+@*             <div class="form-group text-light fw-bold">
+                <label for="passwordInput">Would you like to add Add Ins?</label>
+                <input type="checkbox" @bind-value="hasAddIns" />
+            </div> *@
+            <div class="row">
+                <p class="lead fw-bold text-start">Select Add Ins 🌿 <input type="checkbox" @bind-value="hasAddIns" /></p>
+            @if (hasAddIns)
+            {
+
+
+                    @foreach (var eachAddInInput in addInsfromInput)
+                    {
+                        <div class="col-8">
+                            <div class="form-group mb-3">
+                                <label for="passwordInput">Choose Add In</label>
+                                <select class="form-select" aria-label="Default select example" @bind="eachAddInInput.Name">
+                                    <option selected disabled>Select Add In</option>
+
+                                    @foreach (var addIn in addIns)
+                                    {
+                                        <option>@addIn.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group mb-3">
+                                <label for="passwordInput">Select Quantity</label>
+                                <input class="form-control input-sm" id="passwordInput" type="number"
+                                @bind-value="eachAddInInput.Quantity">
+                            </div>
+                        </div>
+                    }
+                    <div class="d-flex justify-content-between col-12">
+                        <button type="submit" class="btn text-light" style="background-color: var(--primary-color);"
+                        @onclick="()=>addInsfromInput.Add(new())">
+                            Add input
+                        </button>
+
+                        @if (addInsfromInput.Count > 1)
+                        {
+                            <button type="submit" class="btn text-light btn-danger"
+                            @onclick="()=> addInsfromInput.RemoveAt(addInsfromInput.Count - 1)">
+                                Delete input
+                            </button>
+                        }
+
+                    <button type="submit" class="btn text-light btn-danger"
+                            @onclick="Check">
+                        Check input
+                    </button>
+                </div>
+            
+            }
+                </div>
+        </div>
+    </div>
+
+        <div class="d-flex justify-content-between mt-4">
+
+            <Button Class="text-light" style="background-color:var(--primary-color)">
+                Back
+            </Button>
+
+            <Button Class="text-light" style="background-color:var(--primary-color)"
+            @onclick= "OpenEnterCustomerDetailsModal">Proceed Order</Button>
+        </div>
+    </div>
+}
+@code {
+
+    @inject NavigationManager navigationManager;
+
+    //for products and addIns
+    List<Product> products = Universal.GetAllProducts();
+    List<AddIns> addIns = Universal.GetallAddins();
+
+    List<ProductOrderRequest> productsFromInput = new()
+    {
+        new()
+    };
+
+    List<ProductOrderRequest> addInsfromInput = new()
+    {
+        new()
+    };
+
+    void Check()
+    {
+
+        StaffTasks.Checked(productsFromInput);
+    }
+
+    //universal
+    string _universalErrorMessage;
+    bool hasAddIns= false;
+    bool orderSuccess = false;
+
+    bool CheckForEmptyInputField()
+    {
+        if((productsFromInput.Where(product => product.Name == null || product.Quantity == 0).ToList()).Count > 0){
+            _universalErrorMessage = "Product fields cannot be empty";
+            return false;
+        }
+        if (hasAddIns)
+        {
+            if ((addInsfromInput.Where(addIn => addIn.Name == null || addIn.Quantity == 0).ToList()).Count > 0)
+            {
+                _universalErrorMessage = "AddIn fields cannot be empty";
+                return false;
+            }
+            
+        }
+        return true;
+    }
+
+    void CloseErrorAlert()
+    {
+        _customerSelectionErrorMsg = null;
+        _universalErrorMessage = null;
+    }
+
+
+    //for member details
+    string _customerSelectionErrorMsg;
+
+    private bool proceedAsMember = false;
+    private string _memberNameOrPhoneNum;
+    int noOfFreeDrinks=0;
+
+    //place order functions
+    void ProceedGuestOrder()
+    {
+        if (!hasAddIns) addInsfromInput = null;
+
+        bool isSuccess = StaffTasks.ProceedGuestOrder(productsFromInput, addInsfromInput);
+
+        if (isSuccess)
+        {
+            HideAddCustomerModal();
+            orderSuccess = true;
+        }
+
+    }
+
+    async void ProceedMemberOrder1()
+    {
+
+        if (!hasAddIns) addInsfromInput = null;
+
+        _customerSelectionErrorMsg = StaffTasks.CheckMemberValidity(_memberNameOrPhoneNum);
+
+        if (_customerSelectionErrorMsg == null)
+        {
+             noOfFreeDrinks = StaffTasks.CheckNoOfFreeDrinks(_memberNameOrPhoneNum);
+
+            if (noOfFreeDrinks > 0)
+            {
+                await OpenEnterCustomerDetailsModal();
+            }
+
+        }
+
+
+    }
+
+
+    //modal settings
+    Modal enterCustomerDetailsModal;
+    Modal redeemFreeDrinkOptionModal;
+
+    private async Task OpenEnterCustomerDetailsModal()
+    {
+        bool isNotEmpty = CheckForEmptyInputField();
+        if (isNotEmpty)
+        {
+            await enterCustomerDetailsModal?.ShowAsync();
+        }
+    }
+
+
+    private async Task HideAddCustomerModal()
+    {
+        await enterCustomerDetailsModal?.HideAsync();
+    }
+
+    private async Task OpenRedeemOptionModal()
+    {
+
+        await redeemFreeDrinkOptionModal?.ShowAsync();
+    }
+
+
+    private async Task HideRedeemOptionModal()
+    {
+        await redeemFreeDrinkOptionModal?.HideAsync();
+    }
+}

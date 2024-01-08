@@ -1,0 +1,240 @@
+﻿@page "/admin/product"
+@using Components.Layout
+@using Coursework1Development.Models;
+@using Coursework1Development.Components.Alerts
+@using Logics
+
+@layout AdminLayout
+
+
+@*
+    Add Product Modal
+*@
+<Modal @ref="addProductModal" Title="Add Product">
+    <BodyTemplate>
+        <div class="row">
+            <div class="form-group mb-2 col-6">
+                <label for="usernameInput">Product name</label>
+                <input class="form-control input-sm" id="usernameInput" type="text"
+                       @bind-value="_name">
+            </div>
+
+            <div class="form-group mb-3 col-6">
+                <label for="passwordInput">Price</label>
+                <input class="form-control input-sm" id="passwordInput" type="number"
+                       @bind-value="_price">
+            </div>
+
+            <div class="form-group mb-3 col-12">
+                <label for="passwordInput">Product description</label>
+                <input class="form-control input-sm" id="passwordInput" type="text"
+                       @bind-value="_description">
+            </div>
+
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="HideAllModal">Close</Button>
+        <Button Class ="text-light" @onclick="HandleAddProduct" style="background-color:var(--primary-color)">Add Product</Button>
+    </FooterTemplate>
+</Modal>
+
+
+@*
+    Edit Product Modal
+*@
+<Modal @ref="editProductModal" Title="Edit Product">
+    <BodyTemplate>
+        <div class="row">
+            <div class="form-group mb-2 col-6">
+                <label for="usernameInput">Product name</label>
+                <input class="form-control input-sm" id="usernameInput" type="text"
+                @bind-value="_selectedProduct.Name">
+            </div>
+
+            <div class="form-group mb-3 col-6">
+                <label for="passwordInput">Price</label>
+                <input class="form-control input-sm" id="passwordInput" type="number"
+                       @bind-value="_selectedProduct.Price">
+            </div>
+
+            <div class="form-group mb-3 col-12">
+                <label for="passwordInput">Product description</label>
+                <input class="form-control input-sm" id="passwordInput" type="text"
+                       @bind-value="_selectedProduct.Description">
+            </div>
+
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="HideAllModal">Close</Button>
+        <Button @onclick="HandleEditProduct" Class="text-light" style="background-color:var(--primary-color)">Save changes</Button>
+    </FooterTemplate>
+</Modal>
+
+
+@*
+    Delete Product Modal
+*@
+<Modal @ref="deleteProductModal" Title="Delete Product">
+    <BodyTemplate>
+        <p>Are you sure you want to delete product <bold>@_selectedProduct.Name</bold> ?</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="HideAllModal">Close</Button>
+        <Button @onclick="HandleDeleteProduct" Class="text-light" style="background-color:var(--catcher)">Delete</Button>
+    </FooterTemplate>
+</Modal>
+
+
+<div class="container">
+
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h1>Products</h1>
+        <Button @onclick="OpenAddProductModel" class="text-light" Style="height:max-content;background-color:var(--primary-color)">Add Product</Button>
+    </div>
+@if (allProducts.Count <= 0)
+{
+    <p class="text-center">No Products at the moment</p>
+}
+
+
+else if (allProducts.Count > 0)
+{
+
+
+   @*     <div class="col-12 d-flex flex-wrap justify-content-start"> *@
+
+       <div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Product ID</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Product Price</th>
+                        <th scope="col">Product Description</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Your data goes here -->
+                    @foreach (var product in allProducts)
+                    {
+                    <tr>
+                        <td><span class="badge rounded-pill bg-secondary p-2">@product.ID</span></td>
+                        <td>@product.Name</td>
+                        <td class="text-danger">Rs @product.Price</td>
+                        <td>@product.Description</td>
+                        <td>
+                            <div class="d-flex justify-content-evenly">
+                                    <button class="btn" style=" background-color: var(--primary-color); color: #ffff"
+                                            @onclick="()=> OpenEditModal(product)">
+                                        <i class="fa-regular fa-pen-to-square"></i>
+                                    </button>
+                                    <button class="btn" style=" background-color: var(--catcher); color: #ffff"
+                                            @onclick="()=>OpenDeleteModal(product)">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                    <!-- Add more <tr> rows as needed -->
+                </tbody>
+            </table>
+ @*    @foreach(var product in allProducts)
+    {
+        
+        <div class="card rounded-3 p-2 m-4 shadow-sm" style="width:250px;">
+            <div class="card-body">
+                <h5 class="card-title lead">@product.Name</h5>
+                <p class="card-text text-danger">Rs @product.Price</p>
+                    <p class="card-text">@product.Description</p>
+                <button class="btn rounded-3 mb-2 w-100 edit-btn" style=" background-color: var(--primary-color); color: #ffff"
+                @onclick ="()=> OpenEditModal(product)">Edit</button>
+                <button class="btn delete-btn w-100" style=" background-color: var(--catcher); color: #ffff"
+                       @onclick="()=>OpenDeleteModal(product)">Delete</button>
+            </div>
+        </div>
+    } *@
+    </div>
+}
+</div>
+
+
+
+@code {
+@inject NavigationManager navigationManager;
+
+    List<Product> allProducts = Universal.GetAllProducts();
+
+    //for adding new product
+    string _name;
+    string _description;
+    float _price;
+
+    public void HandleAddProduct()
+    {
+        bool isAdded = AdminTasks.AddProduct(_name, _description, _price);
+
+        if (isAdded)
+        {
+            navigationManager.NavigateTo("/admin/product", forceLoad:true);
+        }
+    }
+
+
+
+    public void HandleEditProduct()
+    {
+        bool isEdited =AdminTasks.EditProduct(_selectedProduct);
+
+        if (isEdited)
+        {
+            navigationManager.NavigateTo("/admin/product", forceLoad: true);
+        }
+    }
+
+    public void HandleDeleteProduct()
+    {
+        bool isDeleted = AdminTasks.DeleteProduct(_selectedProduct);
+        if (isDeleted)
+        {
+            navigationManager.NavigateTo("/admin/product", forceLoad: true);
+        };
+    }
+
+
+    private Modal addProductModal;
+    private Modal editProductModal;
+    private Modal deleteProductModal;
+
+    private Product _selectedProduct;
+
+
+    private async Task OpenAddProductModel()
+    {
+        await addProductModal?.ShowAsync();
+    }
+
+    private async Task HideAllModal()
+    {
+        await addProductModal?.HideAsync();
+        await deleteProductModal?.HideAsync();
+        await editProductModal?.HideAsync();
+    }
+
+
+    async void OpenDeleteModal(Product product)
+    {
+        _selectedProduct = product;
+        await deleteProductModal?.ShowAsync();
+    }
+
+
+    async void OpenEditModal(Product product)
+    {
+        _selectedProduct = product;
+        await editProductModal?.ShowAsync();
+    }
+}

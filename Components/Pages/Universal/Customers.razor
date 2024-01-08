@@ -1,0 +1,108 @@
+﻿
+@page "/customers"
+
+@using Coursework1Development.Components.Layout
+@using Coursework1Development.Logics
+@layout AdminLayout
+
+<Modal @ref="addCustomerModal" Title="Add Customer">
+    <BodyTemplate>
+        <div class="row">
+
+            <div class="form-group mb-2 col-12">
+                <label for="usernameInput">Customer name</label>
+                <input class="form-control input-sm" id="usernameInput" type="text"
+                       @bind-value="_name">
+            </div>
+
+            <div class="form-group mb-3 col-6">
+                <label for="emailInput">Email</label>
+                <input class="form-control input-sm" id="emailInput" type="text"
+                       @bind-value="_email">
+            </div>
+
+            <div class="form-group mb-3 col-6">
+                <label for="phoneNumInput">Phone number</label>
+                <input class="form-control input-sm" id="phoneNumInput" type="text"
+                       @bind-value="_phoneNumber">
+            </div>
+
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="HideAddCustomerModal">Close</Button>
+        <Button Class="text-light" @onclick="HandleAddCustomer" style="background-color:var(--primary-color)">Add Customer</Button>
+    </FooterTemplate>
+</Modal>
+
+
+
+
+
+<div class="container">
+
+
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h1>Customers</h1>
+        <Button  class="text-light" Style="height:max-content;background-color:var(--primary-color)"
+        @onclick= "OpenAddCustomerModal">Add Customer</Button>
+    </div>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Customer ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Phone number</th>
+                <th scope="col">Added By</th>
+                <th scope="col">Added On</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Your data goes here -->
+            <tr>
+                <td><span class="badge rounded-pill bg-secondary p-2">ID</span></td>
+                <td>Customer Name</td>
+                <td>sesjdjd@gmail.com</td>
+                <td>23239392323</td>
+                <td><span class="btn rounded-pill btn-outline-warning">Staff Name</span></td>
+                <td>23 May, 2023</td>
+            </tr>
+            <!-- Add more <tr> rows as needed -->
+        </tbody>
+    </table>
+</div>
+@code {
+    @inject NavigationManager navigationManager;
+    private Modal addCustomerModal;
+
+    private string _name;
+    private string _email;
+    private string _phoneNumber;
+
+
+    private async Task OpenAddCustomerModal()
+    {
+        await addCustomerModal?.ShowAsync();
+    }
+
+    private async Task HideAddCustomerModal()
+    {
+        await addCustomerModal?.HideAsync();
+    }
+
+
+    private void HandleAddCustomer()
+    {
+        bool isAdded = StaffTasks.AddNewCustomer(_name, _email, _phoneNumber);
+
+        if (isAdded)
+        {
+            navigationManager.NavigateTo("/customers", forceLoad:true);
+        }
+    }
+
+}
+

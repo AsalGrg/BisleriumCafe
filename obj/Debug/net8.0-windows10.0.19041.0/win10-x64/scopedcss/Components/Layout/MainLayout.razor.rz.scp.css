@@ -1,0 +1,13 @@
+
+    .nav-item :active[b-ba3nbqhiqr] {
+        background-color: #4B49AC;
+        color: white;
+    }
+
+    .nav-item :hover[b-ba3nbqhiqr] {
+        background-color: var(--secondary-light);
+        color: white;
+    }
+.check[b-ba3nbqhiqr]{
+    background-color: green;
+}

@@ -1,0 +1,13 @@
+
+    .nav-item :active {
+        background-color: #4B49AC;
+        color: white;
+    }
+
+    .nav-item :hover {
+        background-color: var(--secondary-light);
+        color: white;
+    }
+.check{
+    background-color: green;
+}
